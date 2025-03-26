@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Train Results</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f9f9f9;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+    }
+
+    .results-container {
+      background: #fff;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      padding: 20px;
+      width: 80%;
+      max-width: 600px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    h1 {
+      text-align: center;
+      color: #333;
+      margin-bottom: 20px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 20px;
+    }
+
+    th, td {
+      padding: 12px;
+      text-align: left;
+      border-bottom: 1px solid #ddd;
+    }
+
+    th {
+      background-color: #f4f4f4;
+      color: #333;
+    }
+
+    tr:hover {
+      background-color: #f1f1f1;
+    }
+
+    td a {
+      color: #007BFF;
+      text-decoration: none;
+    }
+
+    td a:hover {
+      text-decoration: underline;
+    }
+
+    .return-button {
+      display: block;
+      width: 100%;
+      padding: 10px;
+      background-color: #007BFF;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      text-align: center;
+      font-size: 16px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    .return-button:hover {
+      background-color: #0056b3;
+    }
+
+    .return-button:active {
+      background-color: #004080;
+    }
+
+    @media (max-width: 480px) {
+      .results-container {
+        width: 95%;
+      }
+
+      table th, table td {
+        font-size: 14px;
+      }
+
+      .return-button {
+        font-size: 14px;
+        padding: 8px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="results-container">
+    <h1>Train Results</h1>
+    <table>
+      <thead>
+        <tr>
+          <th>Train Number</th>
+          <th>Total Seats</th>
+        </tr>
+      </thead>
+      <tbody id="trainResults">
+        <tr>
+          <td colspan="2">Loading...</td>
+        </tr>
+      </tbody>
+    </table>
+    <button class="return-button" id="returnButton">Return to Search</button>
+  </div>
+  <script>
+    function getQueryParam(param) {
+      const urlParams = new URLSearchParams(window.location.search);
+      return urlParams.get(param);
+    }
+
+    function displayFilteredTrains() {
+      const fromCity = getQueryParam('fromCity');
+      const toCity = getQueryParam('toCity');
+      const date = getQueryParam('date');
+      const email = getQueryParam('email');
+
+      fetch(`http://localhost:3000/api/trains?fromCity=${fromCity}&toCity=${toCity}&date=${date}`)
+        .then(response => {
+          if (!response.ok) {
+            throw new Error(`Error fetching trains: ${response.status}`);
+          }
+          return response.json();
+        })
+        .then(trains => {
+          const tableBody = document.getElementById('trainResults');
+          tableBody.innerHTML = '';
+
+          if (trains.length > 0) {
+            trains.forEach(train => {
+              const row = document.createElement('tr');
+              row.innerHTML = `
+                <td><a href="trainDetails.html?trainNumber=${train.trainNumber}&email=${email}">${train.trainNumber}</a></td>
+                <td>${train.totalSeats}</td>
+              `;
+              tableBody.appendChild(row);
+            });
+          } else {
+            const noResultsRow = document.createElement('tr');
+            noResultsRow.innerHTML = '<td colspan="2">No trains found for the selected route.</td>';
+            tableBody.appendChild(noResultsRow);
+          }
+        })
+        .catch(err => {
+          console.error(err);
+          const tableBody = document.getElementById('trainResults');
+          tableBody.innerHTML = `<tr><td colspan="2">Error: ${err.message}</td></tr>`;
+        });
+    }
+
+    function returnToSearch() {
+      const email = getQueryParam('email');
+      if (email) {
+        window.location.href = `search_trains.html?email=${encodeURIComponent(email)}`;
+      } else {
+        alert('Email not found in the URL!');
+      }
+    }
+
+    document.getElementById('returnButton').addEventListener('click', returnToSearch);
+
+    window.onload = displayFilteredTrains;
+  </script>
+</body>
+</html>

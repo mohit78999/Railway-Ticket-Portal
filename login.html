@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login Page</title>
+  <script src="https://cdn.jsdelivr.net/npm/react@18/umd/react.production.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/react-dom@18/umd/react-dom.production.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/babel-standalone@6.26.0/babel.min.js"></script>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f2f2f2;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+    .login-container {
+      background-color: white;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      width: 300px;
+    }
+    .input-field {
+      width: 100%;
+      padding: 10px;
+      margin: 10px 0;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+    }
+    .btn {
+      background-color: #007bff;
+      color: white;
+      padding: 10px;
+      border: none;
+      border-radius: 4px;
+      width: 100%;
+      cursor: pointer;
+      font-size: 16px;
+    }
+    .btn:hover {
+      background-color: #0056b3;
+    }
+    .error {
+      color: red;
+      font-size: 14px;
+    }
+    .link {
+      text-align: center;
+      margin-top: 10px;
+    }
+    .link a {
+      color: #007bff;
+      text-decoration: none;
+    }
+    .link a:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+
+  <div id="root"></div>
+
+  <script type="text/babel">
+    const { useState } = React;
+
+    function LoginPage() {
+      const [email, setEmail] = useState('');
+      const [password, setPassword] = useState('');
+      const [error, setError] = useState('');
+
+      const handleSubmit = (event) => {
+        event.preventDefault();
+
+        const trimmedEmail = email.trim();
+        const emailPattern = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/;
+
+        if (!email || !password) {
+          setError('Please fill in all fields.');
+        } else if (!emailPattern.test(trimmedEmail)) {
+          setError('Please enter a valid email.');
+        } else {
+          const users = JSON.parse(localStorage.getItem('users')) || [];
+          const user = users.find(
+            (user) => user.email === trimmedEmail && user.password === password
+          );
+
+          if (user) {
+            setError('');
+            const queryParams = new URLSearchParams({ email: user.email });
+            window.location.href = `search_trains.html?${queryParams.toString()}`; // Pass email in the URL
+          } else {
+            setError('Invalid email or password. Please try again.');
+          }
+        }
+      };
+
+      const goToSignUp = () => {
+        window.location.href = 'signup.html';
+      };
+
+      return (
+        <div className="login-container">
+          <h2>Login</h2>
+          <form onSubmit={handleSubmit}>
+            <input
+              type="text"
+              placeholder="Email"
+              className="input-field"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+            />
+            <input
+              type="password"
+              placeholder="Password"
+              className="input-field"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+            />
+            {error && <div className="error">{error}</div>}
+            <button type="submit" className="btn">Login</button>
+          </form>
+          <div className="link">
+            <p>Don't have an account? <a href="#" onClick={goToSignUp}>Sign up here</a></p>
+          </div>
+        </div>
+      );
+    }
+
+    ReactDOM.render(<LoginPage />, document.getElementById('root'));
+  </script>
+</body>
+</html>

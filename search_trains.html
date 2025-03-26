@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Search Trains</title>
+  <script src="https://cdn.jsdelivr.net/npm/react@18/umd/react.production.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/react-dom@18/umd/react-dom.production.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/babel-standalone@6.26.0/babel.min.js"></script>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: Arial, sans-serif;
+      display: flex;
+      height: 100vh;
+    }
+    .sidebar {
+      width: 250px;
+      background-color: #333;
+      color: white;
+      position: fixed;
+      top: 0;
+      left: 0;
+      bottom: 0;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+    }
+    .sidebar a {
+      color: white;
+      text-decoration: none;
+      padding: 10px;
+      margin-bottom: 10px;
+      border-radius: 4px;
+    }
+    .sidebar a:hover {
+      background-color: #575757;
+    }
+    .content {
+      margin-left: 250px;
+      flex-grow: 1;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background-color: #f4f4f4;
+      padding: 20px;
+      height: 100%;
+    }
+    .search-trains-container {
+      background-color: white;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      width: 80%;
+      max-width: 800px;
+      min-width: 500px;
+      height: auto;
+    }
+    .input-field, .select-field {
+      width: 100%;
+      padding: 10px;
+      margin: 10px 0;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+    }
+    .btn {
+      background-color: #007bff;
+      color: white;
+      padding: 10px;
+      border: none;
+      border-radius: 4px;
+      width: 100%;
+      cursor: pointer;
+    }
+    .btn:hover {
+      background-color: #0056b3;
+    }
+  </style>
+</head>
+<body>
+  <div id="root"></div>
+
+<script type="text/babel">
+  const { useState, useEffect } = React;
+
+  function SearchTrainsPage() {
+    const [date, setDate] = useState('');
+    const [fromCity, setFromCity] = useState('');
+    const [toCity, setToCity] = useState('');
+    const [minDate, setMinDate] = useState('');
+
+    const cities = [
+      "Delhi", "Mumbai", "Chennai", "Kolkata", "Bangalore", 
+      "Hyderabad", "Pune", "Ahmedabad", "Jaipur", "Lucknow"
+    ];
+
+    useEffect(() => {
+      const today = new Date().toISOString().split('T')[0];
+      setMinDate(today);
+    }, []);
+
+    function getQueryParam(param) {
+      const urlParams = new URLSearchParams(window.location.search);
+      return urlParams.get(param);
+    }
+
+    const handleBookingHistoryRedirect = () => {
+      const email = getQueryParam('email');
+      if (email) {
+        window.location.href = `bookingHistory.html?email=${encodeURIComponent(email)}`;
+      } else {
+        alert('Email not found in the URL!');
+      }
+    };
+
+    const handleHomeRedirect = () => {
+      const email = getQueryParam('email');
+      if (email) {
+        window.location.href = `home.html?email=${encodeURIComponent(email)}`;
+      } else {
+        alert('Email not found in the URL!');
+      }
+    };
+
+    const handleProfileRedirect = () => {
+      const email = getQueryParam('email');
+      if (email) {
+        window.location.href = `profile.html?email=${encodeURIComponent(email)}`;
+      } else {
+        alert('Email not found in the URL!');
+      }
+    };
+
+    const handleSubmit = (event) => {
+      event.preventDefault();
+      if (!date || !fromCity || !toCity) {
+        alert('Please fill in all fields');
+        return;
+      }
+      const email = getQueryParam('email');
+      const searchParams = new URLSearchParams({ date, fromCity, toCity, email });
+      window.location.href = `result.html?${searchParams.toString()}`;
+    };
+
+    return (
+      <div style={{ display: 'flex', width: '100%' }}>
+        <div className="sidebar">
+          <h2>Menu</h2>
+          <a href="#" onClick={handleHomeRedirect}>Home</a>
+          <a href="#" id="booking-history" onClick={handleBookingHistoryRedirect}>Booking History</a>
+          <a href="#" onClick={handleProfileRedirect}>Profile</a>
+          <a href="login.html">Logout</a>
+        </div>
+
+        <div className="content">
+          <div className="search-trains-container">
+            <h2>Search Trains</h2>
+            <form onSubmit={handleSubmit}>
+              <input
+                type="date"
+                className="input-field"
+                value={date}
+                min={minDate}
+                onChange={(e) => setDate(e.target.value)}
+              />
+              <select
+                className="select-field"
+                value={fromCity}
+                onChange={(e) => setFromCity(e.target.value)}
+              >
+                <option value="">From</option>
+                {cities.map(city => <option key={city} value={city}>{city}</option>)}
+              </select>
+              <select
+                className="select-field"
+                value={toCity}
+                onChange={(e) => setToCity(e.target.value)}
+              >
+                <option value="">To</option>
+                {cities.map(city => <option key={city} value={city}>{city}</option>)}
+              </select>
+              <button type="submit" className="btn">Search Trains</button>
+            </form>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  ReactDOM.render(<SearchTrainsPage />, document.getElementById('root'));
+</script>
+</body>
+</html>

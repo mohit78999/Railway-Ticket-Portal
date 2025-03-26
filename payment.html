@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Payment Page</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f9f9f9;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+
+    .payment-container {
+      background-color: #ffffff;
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      width: 80%;
+      max-width: 600px;
+      padding: 30px;
+      margin: 20px;
+      text-align: center;
+    }
+
+    .payment-container h1 {
+      color: #333;
+      margin-bottom: 20px;
+    }
+
+    .payment-container p {
+      font-size: 18px;
+      margin: 10px 0;
+    }
+
+    .payment-options {
+      margin: 20px 0;
+    }
+
+    .payment-options label {
+      display: block;
+      font-size: 16px;
+      margin-bottom: 10px;
+    }
+
+    .payment-button {
+      display: inline-block;
+      background-color: #28a745;
+      color: white;
+      text-decoration: none;
+      padding: 12px 25px;
+      border-radius: 30px;
+      text-align: center;
+      font-size: 16px;
+      margin-top: 20px;
+      box-shadow: 0 6px 12px rgba(0, 123, 255, 0.2);
+      transition: background-color 0.3s ease;
+    }
+
+    .payment-button:hover {
+      background-color: #218838;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="payment-container">
+    <h1>Payment Page</h1>
+    <p id="trainDetails"></p>
+    <p id="priceDetails"></p>
+
+    <div class="payment-options">
+      <h3>Select Payment Method:</h3>
+      <label><input type="radio" name="paymentMethod" value="on-counter"> On Counter</label>
+      <label><input type="radio" name="paymentMethod" value="upi"> UPI</label>
+      <label><input type="radio" name="paymentMethod" value="netbanking"> Net Banking</label>
+    </div>
+
+    <a href="#" class="payment-button" onclick="handlePayment()">Pay</a>
+  </div>
+  <script>
+    const urlParams = new URLSearchParams(window.location.search);
+    const trainNumber = urlParams.get('trainNumber');
+    const from = urlParams.get('from');
+    const to = urlParams.get('to');
+    const date = urlParams.get('date');
+    const seatType = urlParams.get('seatType');
+    const numSeats = urlParams.get('numSeats');
+    const totalPrice = urlParams.get('totalPrice');
+    const email = urlParams.get('email');
+
+    document.getElementById('trainDetails').textContent = 
+      `Train Number: ${trainNumber}, From: ${from}, To: ${to}, Date: ${date}`;
+    document.getElementById('priceDetails').textContent = 
+      `Seat Type: ${seatType}, Number of Seats: ${numSeats}, Total Price: ₹${totalPrice}`;
+
+      function handlePayment() {
+      
+
+      // Make an API call to the backend to insert the booking into the database
+      const bookingDetails = {
+        email: email,
+        date:date,
+        trainNumber: trainNumber,
+        fromCity: from,
+        toCity: to,
+        seatType: seatType,
+        numSeats: numSeats,
+      };
+
+      // API call to insert the booking into the BookingHistory collection
+      fetch('http://localhost:3000/api/bookings', {  // Replace with your backend URL
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(bookingDetails),
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data.success) {
+          alert('Booking Successful!');
+          window.location.href = `acknowledgement.html?email=${email}&&trainNumber=${trainNumber}&from=${from}&to=${to}&date=${date}&seatType=${seatType}&numSeats=${numSeats}&totalPrice=${totalPrice}`; // Redirect to acknowledgment page
+        } else {
+          alert('Booking failed. Please try again.');
+        }
+      })
+      .catch(error => {
+        console.error('Error:', error);
+        alert('Something went wrong. Please try again later.');
+      });
+    }
+
+  </script>
+</body>
+</html>

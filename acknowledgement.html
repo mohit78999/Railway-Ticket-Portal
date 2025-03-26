@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Acknowledgement</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f3f4f6;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+
+    .acknowledgement-container {
+      background-color: #ffffff;
+      border-radius: 10px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+      width: 80%;
+      max-width: 500px;
+      padding: 20px;
+      text-align: center;
+    }
+
+    .acknowledgement-container h1 {
+      color: #333;
+      margin-bottom: 20px;
+      font-size: 24px;
+    }
+
+    .acknowledgement-container p {
+      font-size: 18px;
+      margin: 10px 0;
+      color: #555;
+    }
+
+    .btn {
+      background-color: #007bff;
+      color: white;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 16px;
+    }
+
+    .return-button:hover {
+      background-color: #0056b3;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="acknowledgement-container">
+    <h1>Booking Acknowledgement</h1>
+    <p id="trainDetails"></p>
+    <p id="seatDetails"></p>
+    <p id="journeyDetails"></p>
+    <p id="totalPrice"></p>
+    <button class="btn" onclick="goToHome()">Return</button>
+  </div>
+
+  <script>
+    const urlParams = new URLSearchParams(window.location.search);
+    const trainNumber = urlParams.get('trainNumber');
+    const from = urlParams.get('from');
+    const to = urlParams.get('to');
+    const date = urlParams.get('date');
+    const seatType = urlParams.get('seatType');
+    const numSeats = urlParams.get('numSeats');
+    const totalPrice = urlParams.get('totalPrice');
+    const email = urlParams.get('email');
+
+    document.getElementById('trainDetails').textContent = `Train Number: ${trainNumber}`;
+    document.getElementById('seatDetails').textContent = `Seat Type: ${seatType}, Number of Seats: ${numSeats}`;
+    document.getElementById('journeyDetails').textContent = `Journey Date: ${date}, From: ${from}, To: ${to}`;
+    document.getElementById('totalPrice').textContent = `Total Price: ₹${totalPrice}`;
+
+    function goToHome() {
+      window.location.href = `home.html?email=${email}`;  // Redirect to home page
+    }
+  </script>
+
+</body>
+</html>
